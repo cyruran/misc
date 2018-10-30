@@ -1,3 +1,6 @@
 www.youtube.com###comments
 vk.com##._post_content > .post_content > .post_info > .replies
 vk.com##.like_cont > .like_btns > ._reply_wrap._comment.comment.like_btn
+www.instagram.com##.QvAa1
+www.instagram.com##.oujXn
+www.instagram.com##._9AhH0
