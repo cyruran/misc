@@ -16,44 +16,66 @@ function x() {
         max: 4.0,
         step: 0.1,
         get: x => x.playbackRate,
-        set: (x, y) => x.playbackRate = y
+        set: (x, y) => (x.playbackRate = y),
+        id: "playback"
       },
       {
         min: 0.0,
         max: 1.0,
         step: 0.01,
         get: x => x.volume,
-        set: (x, y) => x.volume = y,
+        set: (x, y) => (x.volume = y),
+        id: "volume"
       }
     ];
 
+    function set_value(x, value, v, n) {
+      x.set(v, value);
+      console.log(value);
+      n.textContent = value;
+    };
+
+    var reset = document.createElement("button");
+    reset.textContent = "r";
+    c.appendChild(reset);
+
     input_info.forEach(x => {
+      var container = document.createElement("span");
+      container.id = x.id;
+
       var s = document.createElement("input");
       s.type = "range";
       s.min = x.min;
       s.max = x.max;
       s.step = x.step;
-      
+
       s.value = x.get(v);
 
       var n = document.createElement("span");
       n.textContent = s.value;
 
-      s.onchange = s.onpointerchange = s.onpointermove = () => {
-        x.set(v, s.value);
-        console.log(s.value);
-        n.textContent = s.value;
-      };
+      s.onchange = s.onpointerchange = s.onpointermove = () => set_value(x, s.value, v, n);
 
-      c.appendChild(s);
-      c.appendChild(n);
+      container.appendChild(s);
+      container.appendChild(n);
+
+      c.appendChild(container);
     });
-    
+
     var t = document.createElement("input");
     t.type = "checkbox";
     t.checked = true;
-   	t.onchange = () => v.hidden = !t.checked;
+   	t.onchange = () => (v.hidden = !t.checked);
     c.appendChild(t);
+
+    (function () {
+        var x = input_info[0];
+        var [s, n] = document.getElementById(x.id).children;
+        reset.onclick = function() {
+            set_value(x, 1, v, n);
+            s.value = 1;
+        }
+    })();
   }
 
   var b = document.createElement("button");
