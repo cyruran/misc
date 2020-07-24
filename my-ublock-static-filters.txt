@@ -1,4 +1,5 @@
 www.youtube.com###comments
+youtube.com##a[title="В тренде"]
 vk.com##._post_content > .post_content > .post_info > .replies
 vk.com##.like_cont > .like_btns > ._reply_wrap._comment.comment.like_btn
 www.instagram.com##.QvAa1
