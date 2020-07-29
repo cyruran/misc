@@ -1,8 +1,14 @@
-function createSlider(id, min, max, step, initVal = min, handler = null, buttons = false, slideClass = "cm_slider") {
+function sliderOnWheel(e) {
+    e.target.value -= (e.deltaY < 0 ? -1 : 1) * e.target.step;
+    e.target.oninput();
+    e.preventDefault();
+}
+
+function createSlider(id, min, max, step, initVal = min, handler = null, resetButton = false, buttons = false, slideClass = "cm_slider") {
     var rangeId = id + "_range";
     var valId = id + "_val";
 
-    var container = document.createElement("span");
+    var container = document.createElement("td");
     container.id = id + "_container";
     container.classList.add(slideClass);
 
@@ -12,29 +18,52 @@ function createSlider(id, min, max, step, initVal = min, handler = null, buttons
     slideRange.max = max;
     slideRange.step = step;
     slideRange.id = rangeId;
+    slideRange.value = initVal;
     container.appendChild(slideRange);
 
     var slideVal = document.createElement("output");
     slideVal.id = valId;
+    slideVal.value = initVal;
+    slideVal.style.display = "inline-block";
+    slideVal.style.width = "2rem";
+    slideVal.style.margin = "2px";
     container.appendChild(slideVal);
 
-    slideRange.oninput = () => {
-        handler.call(slideRange.value);
-        slideVal.value = slideRange.value;
+    if (handler) {
+        slideRange.oninput = () => {
+            handler(slideRange.value);
+            slideVal.value = slideRange.value;
+        }
+    } else {
+        slideRange.oninput = () => slideVal.value = slideRange.value;
+    }
+
+    slideRange.onwheel = sliderOnWheel;
+
+    container.appendChild(document.createElement("br"));
+
+    if (resetButton) {
+        var bReset = document.createElement("button");
+        bReset.textContent = "r";
+        bReset.style.marginRight = "1rem";
+        bReset.onclick = () => { slideRange.value = initVal; slideRange.oninput(); };
+        container.appendChild(bReset);
     }
 
     if (buttons) {
         var bPrev = document.createElement("button");
         bPrev.textContent = "<";
         bPrev.onclick = () => {
-            slideRange.value -= parseInt(slideRange.step);
+            slideRange.value = Number(slideRange.value) - Number(slideRange.step);
+            slideRange.oninput();
         }
         container.appendChild(bPrev);
 
         var bNext = document.createElement("button");
         bNext.textContent = ">";
         bNext.onclick = () => {
-            slideRange.value += parseInt(slideRange.step);
+            slideRange.value = Number(slideRange.value) + Number(slideRange.step);
+            slideRange.oninput();
         }
         container.appendChild(bNext);
     }
@@ -42,42 +71,85 @@ function createSlider(id, min, max, step, initVal = min, handler = null, buttons
     return [container, rangeId];
 }
 
-var video = document.getElementsByTagName("video");
+function createControls(container) {
+    var video = document.getElementsByTagName("video")[0];
 
-mainId = "cm_advanced_video_control";
-var cMain = document.getElementById(mainId);
+    mainId = "cm_advanced_video_control";
+    var cMain = document.getElementById(mainId);
 
-if (cMain) {
-    cMain.remove();
-}
-
-cMain = document.createElement("span");
-cMain.id = mainId;
-
-var input_info = [
-    {
-        min: 1.0,
-        max: 4.0,
-        step: 0.1,
-        get: x => x.playbackRate,
-        set: (x, y) => (x.playbackRate = y),
-        id: "playback"
-    },
-    {
-        min: 0.0,
-        max: 1.0,
-        step: 0.01,
-        get: x => x.volume,
-        set: (x, y) => (x.volume = y),
-        id: "volume"
+    if (cMain) {
+        cMain.remove();
     }
-];
 
-input_info.forEach((x) => {
+    cMain = document.createElement("table");
+    cMain.id = mainId;
+
+    var row = document.createElement("tr");
+    cMain.appendChild(row);
+
+    var input_info = [
+        {
+            min: 1.0,
+            max: 4.0,
+            step: 0.1,
+            get: x => x.playbackRate,
+            set: (x, y) => { x.playbackRate = y },
+            id: "playback",
+            buttons: true,
+            reset: true
+        },
+        {
+            min: 0.0,
+            max: 1.0,
+            step: 0.01,
+            get: x => x.volume,
+            set: (x, y) => { x.volume = y },
+            id: "volume",
+            buttons: true,
+            reset: true
+        }
+    ];
+
     var cSlider;
     var id;
-    [cSlider, id] = createSlider(x.id, x.min, x.max, x.step, initVal = x.get(video), handler = (y) => x.set(video, y), buttons = true);
-    cMain.appendChild(cSlider);
-});
 
+    input_info.forEach((x) => {
+        [cSlider, id] = createSlider(x.id, x.min, x.max, x.step, x.get(video), (y) => x.set(video, y), x.reset, x.buttons);
+        row.appendChild(cSlider);
+    });
 
+    var skip = {
+        min: 1,
+        max: 60,
+        step: 1,
+        id: "skip",
+        buttons: true,
+        reset: false
+    };
+
+    [cSlider, id] = createSlider(skip.id, skip.min, skip.max, skip.step, 5, null, skip.reset, skip.buttons);
+    row.appendChild(cSlider);
+    [
+        {
+            textContent: "<",
+            onclick: () => { video.currentTime -= document.getElementById(id).value }
+        },
+        {
+            textContent: ">",
+            onclick: () => { video.currentTime -= -document.getElementById(id).value }
+        }
+    ].map((x) => {
+        var b = document.createElement("button");
+        console.log(Object.keys(x));
+        Object.keys(x).forEach((y) => { b[y] = x[y] } );
+        return b;
+    }).forEach((x) => row.appendChild(x));
+
+    var hide = document.createElement("input");
+    hide.type = "checkbox";
+    hide.onchange = () => video.hidden = hide.checked;
+    hide.style.width = hide.style.height = 30;
+    row.appendChild(hide);
+
+    container.appendChild(cMain);
+}
