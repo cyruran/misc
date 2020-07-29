@@ -148,7 +148,7 @@ function createControls(container) {
     var hide = document.createElement("input");
     hide.type = "checkbox";
     hide.onchange = () => video.hidden = hide.checked;
-    hide.style.width = hide.style.height = 30;
+    hide.style.width = hide.style.height = "30px";
     row.appendChild(hide);
 
     container.appendChild(cMain);
