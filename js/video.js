@@ -71,7 +71,8 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
     return [container, rangeId];
 }
 
-function createControls(container) {
+function createControls() {
+    console.log("advanced_video_control");
     var video = document.getElementsByTagName("video")[0];
 
     mainId = "cm_advanced_video_control";
@@ -79,10 +80,21 @@ function createControls(container) {
 
     if (cMain) {
         cMain.remove();
+        return;
     }
 
     cMain = document.createElement("table");
     cMain.id = mainId;
+    cMain.style.zIndex = 3000;
+
+    var coords = video.getBoundingClientRect();
+    cMain.style.position = "absolute";
+    cMain.style.left = `${coords.left}px`;
+    cMain.style.top = `${coords.bottom}px`;
+    cMain.style.backgroundColor = "white";
+    cMain.style.borderColor = "black";
+    cMain.style.borderStyle = "solid";
+    cMain.style.borderWidth = "thin";
 
     var row = document.createElement("tr");
     cMain.appendChild(row);
@@ -140,7 +152,6 @@ function createControls(container) {
         }
     ].map((x) => {
         var b = document.createElement("button");
-        console.log(Object.keys(x));
         Object.keys(x).forEach((y) => { b[y] = x[y] } );
         return b;
     }).forEach((x) => row.appendChild(x));
@@ -148,8 +159,13 @@ function createControls(container) {
     var hide = document.createElement("input");
     hide.type = "checkbox";
     hide.onchange = () => video.hidden = hide.checked;
-    hide.style.width = hide.style.height = "30px";
+    hide.style.width = hide.style.height = "20px";
     row.appendChild(hide);
 
-    container.appendChild(cMain);
+    var playPause = document.createElement("button");
+    playPause.onclick = () => video.paused ? video.play() : video.pause();
+    playPause.textContent = "p";
+    row.appendChild(playPause);
+
+    document.body.appendChild(cMain);
 }
