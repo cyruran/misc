@@ -35,7 +35,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
             slideVal.value = slideRange.value;
         }
     } else {
-        slideRange.oninput = () => slideVal.value = slideRange.value;
+        slideRange.oninput = () => (slideVal.value = slideRange.value);
     }
 
     slideRange.onwheel = sliderOnWheel;
@@ -75,7 +75,7 @@ function createControls() {
     console.log("advanced_video_control");
     var video = document.getElementsByTagName("video")[0];
 
-    mainId = "cm_advanced_video_control";
+    var mainId = "cm_advanced_video_control";
     var cMain = document.getElementById(mainId);
 
     if (cMain) {
@@ -158,7 +158,6 @@ function createControls() {
 
     var hide = document.createElement("input");
     hide.type = "checkbox";
-    hide.onchange = () => video.hidden = hide.checked;
     hide.style.width = hide.style.height = "20px";
     row.appendChild(hide);
 
