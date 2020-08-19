@@ -95,6 +95,7 @@ function createControls() {
     cMain.style.borderColor = "black";
     cMain.style.borderStyle = "solid";
     cMain.style.borderWidth = "thin";
+    cMain.style.margin = "5px";
 
     var row = document.createElement("tr");
     cMain.appendChild(row);
