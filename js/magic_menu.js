@@ -18,11 +18,11 @@ function magicMenu() {
 }
 
 #${magicDiv} * {
-  display: none;
+  visibility: hidden;
 }
 
 #${magicDiv}:hover * {
-  display: block;
+  visibility: visible;
   margin: 10px;
 }
 `;
