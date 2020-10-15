@@ -51,7 +51,7 @@ function addButton(md, caption, hndlr) {
     var button = document.createElement("button");
     button.textContent = caption;
     md.appendChild(button);
-    md.onclick = hndlr;
+    button.onclick = hndlr;
 }
 
 var md = magicMenu();
