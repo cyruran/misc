@@ -10,7 +10,7 @@ function x() {
     var appendButtonDivId = "cm_addSlidesDiv";
 
     let old;
-    [appendButtonId, appendButtonDivId].map(x => document.getElementById(x)).forEach(x => x && x.remove())
+    [appendButtonId, appendButtonDivId].map(x => document.getElementById(x)).forEach(x => x && x.remove());
 
     var div = document.createElement("div");
     var b = document.createElement("button");

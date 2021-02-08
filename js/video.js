@@ -56,7 +56,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
         bPrev.onclick = () => {
             slideRange.value = Number(slideRange.value) - Number(slideRange.step);
             slideRange.oninput();
-        }
+        };
         container.appendChild(bPrev);
 
         var bNext = document.createElement("button");
@@ -64,7 +64,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
         bNext.onclick = () => {
             slideRange.value = Number(slideRange.value) + Number(slideRange.step);
             slideRange.oninput();
-        }
+        };
         container.appendChild(bNext);
     }
 
