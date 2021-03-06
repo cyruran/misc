@@ -1,3 +1,14 @@
+function parseTime(sec_num) {
+    var hours   = Math.floor(sec_num / 3600);
+    var minutes = Math.floor((sec_num % 3600) / 60);
+    var seconds = sec_num % 60;
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    return hours+':'+minutes+':'+seconds;
+};
+
 function sliderOnWheel(e) {
     e.target.value -= (e.deltaY < 0 ? -1 : 1) * e.target.step;
     e.target.oninput();
@@ -71,6 +82,13 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
     return [container, rangeId];
 }
 
+function setTimeLeft() {
+    let video = document.getElementsByTagName("video")[0];
+    let timeLeft = Math.floor((video.duration - video.currentTime) / video.playbackRate);
+    timeSpan = document.getElementById("_time_left");
+    timeSpan.textContent = parseTime(timeLeft);
+}
+
 function createControls() {
     console.log("advanced_video_control");
     var video = document.getElementsByTagName("video")[0];
@@ -79,13 +97,21 @@ function createControls() {
     var cMain = document.getElementById(mainId);
 
     if (cMain) {
+        let intervalIdEl = document.getElementById("_interval_id");
+
+        if (intervalIdEl) {
+            let intervalId = intervalIdEl.value;
+            clearInterval(intervalId);
+        }
+
         cMain.remove();
         return;
     }
 
     cMain = document.createElement("table");
     cMain.id = mainId;
-    cMain.style.zIndex = 3000;
+    cMain.style.zIndex = 999999;
+    cMain.style.userSelect = "none";
 
     var coords = video.getBoundingClientRect();
     cMain.style.position = "absolute";
@@ -167,7 +193,25 @@ function createControls() {
     playPause.textContent = "p";
     row.appendChild(playPause);
 
+    let timeSpan = document.createElement("span");
+    timeSpan.id = "_time_left";
+
+    let intVal = document.createElement("input");
+    intVal.type = "hidden";
+    intVal.id = "_interval_id";
+        
+    row = document.createElement("tr");
+    row.appendChild(timeSpan);
+    row.appendChild(intVal);
+
+    cMain.appendChild(row);
+
     document.body.appendChild(cMain);
+
+    setTimeLeft();
+
+    let intervalId = setInterval(setTimeLeft, 1000);
+    intVal.value = intervalId;
 }
 
 createControls();
