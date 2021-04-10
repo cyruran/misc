@@ -113,10 +113,11 @@ function createControls() {
     cMain.style.zIndex = 999999;
     cMain.style.userSelect = "none";
 
-    var coords = video.getBoundingClientRect();
+    let videoCoords = video.getBoundingClientRect();
+    let bodyCoords = document.body.getBoundingClientRect();
     cMain.style.position = "absolute";
-    cMain.style.left = `${coords.left}px`;
-    cMain.style.top = `${coords.bottom}px`;
+    cMain.style.left = "${videoCoords.left - bodyCoords.left}px";
+    cMain.style.top = "${videoCoords.bottom - bodyCoords.top + 5}px";
     cMain.style.backgroundColor = "white";
     cMain.style.borderColor = "black";
     cMain.style.borderStyle = "solid";
