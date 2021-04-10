@@ -1,7 +1,7 @@
 function parseTime(sec_num) {
-    var hours   = Math.floor(sec_num / 3600);
-    var minutes = Math.floor((sec_num % 3600) / 60);
-    var seconds = sec_num % 60;
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num % 3600) / 60);
+    let seconds = sec_num % 60;
 
     if (hours   < 10) {hours   = "0"+hours;}
     if (minutes < 10) {minutes = "0"+minutes;}
@@ -16,14 +16,14 @@ function sliderOnWheel(e) {
 }
 
 function createSlider(id, min, max, step, initVal = min, handler = null, resetButton = false, buttons = false, slideClass = "cm_slider") {
-    var rangeId = id + "_range";
-    var valId = id + "_val";
+    let rangeId = id + "_range";
+    let valId = id + "_val";
 
-    var container = document.createElement("td");
+    let container = document.createElement("td");
     container.id = id + "_container";
     container.classList.add(slideClass);
 
-    var slideRange = document.createElement("input");
+    let slideRange = document.createElement("input");
     slideRange.type = "range";
     slideRange.min = min;
     slideRange.max = max;
@@ -32,7 +32,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
     slideRange.value = initVal;
     container.appendChild(slideRange);
 
-    var slideVal = document.createElement("output");
+    let slideVal = document.createElement("output");
     slideVal.id = valId;
     slideVal.value = initVal;
     slideVal.style.display = "inline-block";
@@ -54,7 +54,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
     container.appendChild(document.createElement("br"));
 
     if (resetButton) {
-        var bReset = document.createElement("button");
+        let bReset = document.createElement("button");
         bReset.textContent = "r";
         bReset.style.marginRight = "1rem";
         bReset.onclick = () => { slideRange.value = initVal; slideRange.oninput(); };
@@ -62,7 +62,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
     }
 
     if (buttons) {
-        var bPrev = document.createElement("button");
+        let bPrev = document.createElement("button");
         bPrev.textContent = "<";
         bPrev.onclick = () => {
             slideRange.value = Number(slideRange.value) - Number(slideRange.step);
@@ -70,7 +70,7 @@ function createSlider(id, min, max, step, initVal = min, handler = null, resetBu
         };
         container.appendChild(bPrev);
 
-        var bNext = document.createElement("button");
+        let bNext = document.createElement("button");
         bNext.textContent = ">";
         bNext.onclick = () => {
             slideRange.value = Number(slideRange.value) + Number(slideRange.step);
@@ -91,10 +91,10 @@ function setTimeLeft() {
 
 function createControls() {
     console.log("advanced_video_control");
-    var video = document.getElementsByTagName("video")[0];
+    let video = document.getElementsByTagName("video")[0];
 
-    var mainId = "cm_advanced_video_control";
-    var cMain = document.getElementById(mainId);
+    let mainId = "cm_advanced_video_control";
+    let cMain = document.getElementById(mainId);
 
     if (cMain) {
         let intervalIdEl = document.getElementById("_interval_id");
@@ -124,10 +124,10 @@ function createControls() {
     cMain.style.borderWidth = "thin";
     cMain.style.margin = "5px";
 
-    var row = document.createElement("tr");
+    let row = document.createElement("tr");
     cMain.appendChild(row);
 
-    var input_info = [
+    let input_info = [
         {
             min: 1.0,
             max: 4.0,
@@ -150,15 +150,15 @@ function createControls() {
         }
     ];
 
-    var cSlider;
-    var id;
+    let cSlider;
+    let id;
 
     input_info.forEach((x) => {
         [cSlider, id] = createSlider(x.id, x.min, x.max, x.step, x.get(video), (y) => x.set(video, y), x.reset, x.buttons);
         row.appendChild(cSlider);
     });
 
-    var skip = {
+    let skip = {
         min: 1,
         max: 60,
         step: 1,
@@ -179,17 +179,17 @@ function createControls() {
             onclick: () => { video.currentTime -= -document.getElementById(id).value }
         }
     ].map((x) => {
-        var b = document.createElement("button");
+        let b = document.createElement("button");
         Object.keys(x).forEach((y) => { b[y] = x[y] } );
         return b;
     }).forEach((x) => row.appendChild(x));
 
-    var hide = document.createElement("input");
+    let hide = document.createElement("input");
     hide.type = "checkbox";
     hide.style.width = hide.style.height = "20px";
     row.appendChild(hide);
 
-    var playPause = document.createElement("button");
+    let playPause = document.createElement("button");
     playPause.onclick = () => video.paused ? video.play() : video.pause();
     playPause.textContent = "p";
     row.appendChild(playPause);
