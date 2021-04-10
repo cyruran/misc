@@ -116,8 +116,8 @@ function createControls() {
     let videoCoords = video.getBoundingClientRect();
     let bodyCoords = document.body.getBoundingClientRect();
     cMain.style.position = "absolute";
-    cMain.style.left = "${videoCoords.left - bodyCoords.left}px";
-    cMain.style.top = "${videoCoords.bottom - bodyCoords.top + 5}px";
+    cMain.style.left = `${videoCoords.left - bodyCoords.left}px`;
+    cMain.style.top = `${videoCoords.bottom - bodyCoords.top + 5}px`;
     cMain.style.backgroundColor = "white";
     cMain.style.borderColor = "black";
     cMain.style.borderStyle = "solid";
