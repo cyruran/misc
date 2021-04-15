@@ -15,7 +15,18 @@ function sliderOnWheel(e) {
     e.preventDefault();
 }
 
-function createSlider(id, min, max, step, initVal = min, handler = null, resetButton = false, buttons = false, slideClass = "cm_slider") {
+function createSlider(params) {
+    let id = params.id;
+    let min = params.min;
+    let max = params.max;
+    let step = params.step;
+
+    let initVal = params.initVal || min;
+    let handler = params.handler || null;
+    let resetButton = params.resetButton || false;
+    let buttons = params.buttons || false;
+    let slideClass = params.slideClass || "cm_slider";
+
     let rangeId = id + "_range";
     let valId = id + "_val";
 
@@ -154,20 +165,38 @@ function createControls() {
     let id;
 
     input_info.forEach((x) => {
-        [cSlider, id] = createSlider(x.id, x.min, x.max, x.step, x.get(video), (y) => x.set(video, y), x.reset, x.buttons);
+        [cSlider, id] = createSlider({
+            "id": x.id,
+            "min": x.min,
+            "max": x.max,
+            "step": x.step,
+            "initVal": x.get(video),
+            "handler": (y) => x.set(video, y),
+            "resetButton": x.reset,
+            "buttons": x.buttons
+        });
         row.appendChild(cSlider);
     });
 
     let skip = {
-        min: 1,
+        min: 0.1,
         max: 60,
-        step: 1,
+        step: 0.1,
         id: "skip",
         buttons: true,
         reset: false
     };
 
-    [cSlider, id] = createSlider(skip.id, skip.min, skip.max, skip.step, 5, null, skip.reset, skip.buttons);
+    [cSlider, id] = createSlider({
+        id: skip.id,
+        min: skip.min,
+        max: skip.max,
+        step: skip.step,
+        initVal: 5,
+        handler: null,
+        resetButton: skip.reset,
+        buttons: skip.buttons
+    });
     row.appendChild(cSlider);
     [
         {
