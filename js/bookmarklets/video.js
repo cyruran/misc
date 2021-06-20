@@ -93,8 +93,12 @@ function createSlider(params) {
     return [container, rangeId];
 }
 
+function getVideo() {
+    return document.getElementsByTagName("video")[1];
+}
+
 function setTimeLeft() {
-    let video = document.getElementsByTagName("video")[0];
+    let video = getVideo();
     let timeLeft = Math.floor((video.duration - video.currentTime) / video.playbackRate);
     timeSpan = document.getElementById("_time_left");
     timeSpan.textContent = parseTime(timeLeft);
@@ -102,7 +106,7 @@ function setTimeLeft() {
 
 function createControls() {
     console.log("advanced_video_control");
-    let video = document.getElementsByTagName("video")[0];
+    let video = getVideo();
 
     let mainId = "cm_advanced_video_control";
     let cMain = document.getElementById(mainId);
