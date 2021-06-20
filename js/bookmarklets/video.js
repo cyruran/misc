@@ -141,7 +141,7 @@ function createControls() {
     let input_info = [
         {
             min: 1.0,
-            max: 4.0,
+            max: 10.0,
             step: 0.1,
             get: x => x.playbackRate,
             set: (x, y) => { x.playbackRate = y },
@@ -213,9 +213,15 @@ function createControls() {
         return b;
     }).forEach((x) => row.appendChild(x));
 
+    let pip = document.createElement("button");
+    pip.textContent = "pip";
+    pip.onclick = () => video.requestPictureInPicture();
+    row.appendChild(pip);
+
     let hide = document.createElement("input");
     hide.type = "checkbox";
     hide.style.width = hide.style.height = "20px";
+    hide.onchange = e => { video.hidden = e.target.checked };
     row.appendChild(hide);
 
     let playPause = document.createElement("button");
@@ -242,6 +248,49 @@ function createControls() {
 
     let intervalId = setInterval(setTimeLeft, 1000);
     intVal.value = intervalId;
+
+    document.querySelectorAll(`#${mainId} button`).forEach(x => x.onmousedown = e => e.preventDefault());
 }
 
+function addStyles() {
+    let styleId = "cm_style";
+    if (document.getElementById(styleId)) {
+        return;
+    }
+
+    let styles = `
+    #cm_advanced_video_control {
+        color: black;
+        font-size: 12px;
+        font-family: sans-serif;
+    }
+
+    #cm_advanced_video_control input {
+        display: inline-block;
+    }
+
+    #cm_advanced_video_control button {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 10%;
+        background-color: #eeeeee;
+    }
+
+    #cm_advanced_video_control button:hover {
+        background-color: #cccccc;
+    }
+
+    #cm_advanced_video_control input[type=range] {
+        appearance: auto;
+    }
+`;
+
+    let styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.id = styleId;
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+}
+
+addStyles();
 createControls();
