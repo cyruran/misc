@@ -3,11 +3,11 @@ function parseTime(sec_num) {
     let minutes = Math.floor((sec_num % 3600) / 60);
     let seconds = sec_num % 60;
 
-    if (hours   < 10) {hours   = "0"+hours;}
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
+    if (hours   < 10) hours   = "0"+hours;
+    if (minutes < 10) minutes = "0"+minutes;
+    if (seconds < 10) seconds = "0"+seconds;
     return hours+':'+minutes+':'+seconds;
-};
+}
 
 function sliderOnWheel(e) {
     e.target.value -= (e.deltaY < 0 ? -1 : 1) * e.target.step;
@@ -88,39 +88,100 @@ function createSlider(params) {
             slideRange.oninput();
         };
         container.appendChild(bNext);
+
+        let tempVal = document.createElement("input");
+        tempVal.value = initVal;
+        tempVal.onwheel = e => {
+            let up = e.deltaY < 0;
+            tempVal.value = (parseFloat(tempVal.value) + (up ? step : -step)).toFixed(1);
+            e.preventDefault();
+        };
+        tempVal.style.width = "2rem";
+        tempVal.style.margin = "0 5px";
+        container.appendChild(tempVal);
+
+        if (handler) {
+            let bTemp = document.createElement("button");
+            bTemp.textContent = "t";
+            bTemp.onmousedown = e => {
+                handler(tempVal.value);
+            };
+            bTemp.onmouseup = e => {
+                handler(slideRange.value);
+            };
+            container.appendChild(bTemp);
+        }
     }
 
     return [container, rangeId];
 }
 
 function getVideo() {
-    return document.getElementsByTagName("video")[1];
+    let videoList = document.querySelectorAll("video");
+
+    if (videoList.length == 1) {
+        createControls(videoList[0]);
+        return;
+    } else if (videoList.length == 0) {
+        return;
+    }
+
+    let d = document.createElement("div");
+    d.style.position = "fixed";
+    d.style.left = "30%";
+    d.style.top = "30%";
+    d.style.background = "white";
+    d.style.border = "1px solid black";
+    d.style.padding = "10px";
+    d.style.zIndex = "99999";
+    let sel = document.createElement("select");
+    sel.size = videoList.length;
+    d.appendChild(sel);
+
+    videoList.forEach((x, i) => {
+        let option = document.createElement("option");
+        option.textContent = i;
+        option.value = i;
+        sel.appendChild(option);
+    });
+    let commit = document.createElement("button");
+    commit.textContent = "ok";
+    commit.onclick = () => {
+        let video = videoList[sel.value];
+        d.remove();
+        createControls(video, true);
+    };
+    d.appendChild(commit);
+    document.body.appendChild(d);
 }
 
-function setTimeLeft() {
-    let video = getVideo();
+function setTimeLeft(video) {
     let timeLeft = Math.floor((video.duration - video.currentTime) / video.playbackRate);
     timeSpan = document.getElementById("_time_left");
     timeSpan.textContent = parseTime(timeLeft);
 }
 
-function createControls() {
+function removeControls(cMain) {
+    let intervalIdEl = document.getElementById("_interval_id");
+
+    if (intervalIdEl) {
+        let intervalId = intervalIdEl.value;
+        clearInterval(intervalId);
+    }
+
+    cMain.remove();
+}
+
+function createControls(video, reset) {
     console.log("advanced_video_control");
-    let video = getVideo();
 
     let mainId = "cm_advanced_video_control";
     let cMain = document.getElementById(mainId);
 
     if (cMain) {
-        let intervalIdEl = document.getElementById("_interval_id");
-
-        if (intervalIdEl) {
-            let intervalId = intervalIdEl.value;
-            clearInterval(intervalId);
-        }
-
-        cMain.remove();
-        return;
+        removeControls(cMain);
+        if (!reset)
+            return;
     }
 
     cMain = document.createElement("table");
@@ -145,7 +206,7 @@ function createControls() {
     let input_info = [
         {
             min: 1.0,
-            max: 10.0,
+            max: 5.0,
             step: 0.1,
             get: x => x.playbackRate,
             set: (x, y) => { x.playbackRate = y },
@@ -217,6 +278,14 @@ function createControls() {
         return b;
     }).forEach((x) => row.appendChild(x));
 
+    let playPause = document.createElement("button");
+    playPause.onclick = () => video.paused ? video.play() : video.pause();
+    playPause.textContent = "p";
+    playPause.style.marginLeft = "5px";
+    row.appendChild(playPause);
+
+    row.appendChild(document.createElement("br"));
+
     let pip = document.createElement("button");
     pip.textContent = "pip";
     pip.onclick = () => video.requestPictureInPicture();
@@ -228,32 +297,39 @@ function createControls() {
     hide.onchange = e => { video.hidden = e.target.checked };
     row.appendChild(hide);
 
-    let playPause = document.createElement("button");
-    playPause.onclick = () => video.paused ? video.play() : video.pause();
-    playPause.textContent = "p";
-    row.appendChild(playPause);
+    let hAnnot = document.createElement("button");
+    hAnnot.textContent = "ha";
+    hAnnot.onclick = () => {document.querySelectorAll(".ytp-ce-element").forEach(x => x.hidden = !x.hidden)};
+    row.appendChild(hAnnot);
 
     let timeSpan = document.createElement("span");
     timeSpan.id = "_time_left";
 
+    let closeControls = document.createElement("button");
+    closeControls.textContent = "c";
+    closeControls.style.fontSize = "0.5rem";
+    closeControls.onclick = () => removeControls(cMain);
+
     let intVal = document.createElement("input");
     intVal.type = "hidden";
     intVal.id = "_interval_id";
-        
+
     row = document.createElement("tr");
     row.appendChild(timeSpan);
     row.appendChild(intVal);
+    row.appendChild(closeControls);
 
     cMain.appendChild(row);
 
     document.body.appendChild(cMain);
 
-    setTimeLeft();
+    setTimeLeft(video);
 
-    let intervalId = setInterval(setTimeLeft, 1000);
+    let intervalId = setInterval(() => setTimeLeft(video), 1000);
     intVal.value = intervalId;
 
-    document.querySelectorAll(`#${mainId} button`).forEach(x => x.onmousedown = e => e.preventDefault());
+    /*document.querySelectorAll(`#${mainId} button`).forEach(x => x.onmousedown = e => e.preventDefault());*/
+    return;
 }
 
 function addStyles() {
@@ -297,4 +373,4 @@ function addStyles() {
 }
 
 addStyles();
-createControls();
+getVideo();
