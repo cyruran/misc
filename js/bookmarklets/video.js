@@ -117,7 +117,7 @@ function createSlider(params) {
 }
 
 function getVideo() {
-    let videoList = document.querySelectorAll("video");
+    let videoList = [].slice.call(document.getElementsByTagName("video")).filter(x => x.getBoundingClientRect().width);
 
     if (videoList.length == 1) {
         createControls(videoList[0]);
