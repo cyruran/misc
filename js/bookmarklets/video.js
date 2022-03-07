@@ -96,7 +96,7 @@ function createSlider(params) {
             tempVal.value = (parseFloat(tempVal.value) + (up ? step : -step)).toFixed(1);
             e.preventDefault();
         };
-        tempVal.style.width = "2rem";
+        tempVal.style.width = "25px";
         tempVal.style.margin = "0 5px";
         container.appendChild(tempVal);
 
@@ -307,7 +307,7 @@ function createControls(video, reset) {
 
     let closeControls = document.createElement("button");
     closeControls.textContent = "c";
-    closeControls.style.fontSize = "0.5rem";
+    closeControls.style.fontSize = "9px";
     closeControls.onclick = () => removeControls(cMain);
 
     let intVal = document.createElement("input");
@@ -354,6 +354,9 @@ function addStyles() {
         border-style: solid;
         border-radius: 10%;
         background-color: #eeeeee;
+        min-width: 20px;
+        min-height: 15px;
+        margin: 1px;
     }
 
     #cm_advanced_video_control button:hover {
