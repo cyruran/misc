@@ -338,7 +338,11 @@ function addStyles() {
         return;
     }
 
-    let styles = `
+    let css = `
+    #cm_advanced_video_control * {
+        all: revert;
+    }
+
     #cm_advanced_video_control {
         color: black;
         font-size: 12px;
@@ -371,7 +375,7 @@ function addStyles() {
     let styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
     styleSheet.id = styleId;
-    styleSheet.innerText = styles;
+    styleSheet.innerText = css;
     document.head.appendChild(styleSheet);
 }
 
