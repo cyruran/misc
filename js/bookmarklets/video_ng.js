@@ -46,9 +46,9 @@
   }
 
   #mover {
-      height: 15px;
       background: #999;
       cursor: move;
+      padding-bottom: 2px;
   }
 
   .container {
@@ -57,18 +57,30 @@
       border: gray dotted 1px !important;
   }
 
+  #cm_advanced_video_control.vertical .container {
+      display: inline-block;
+      vertical-align: top;
+      border: none !important;
+  }
+
   #cm_select {
       display: none;
   }
 
-  .controls button {
+  .controls button, #mover button {
       font-size: 9px !important;
       min-width: 1px !important;
+      margin: 0 !important;
   }
 </style>
 
 <div id="cm_advanced_video_control">
-  <div id="mover"></div>
+  <div id="mover">
+    <button id="close">c</button>
+    <button id="select">v</button>
+    <button id="reset_position">r</button>
+    <button id="orient">o</button>
+  </div>
   <div id="playback_container" class="container">
     <div class="slider">
       <input type="range" min="1" max="5" step="0.1" id="playback_range" value="1">
@@ -101,18 +113,15 @@
       <button id="pos_fwd">&gt;</button>
       <button id="toggle_pause">p</button>
     </div>
-    <div>
-      <button id="pip">pip</button>
-      <input id="show_hide" type="checkbox" style="height: 20px; width: 20px;">
-      <button>ha</button>
-    </div>
   </div>
-  <div class="container controls">
+  <div class="container">
+    <button id="pip">pip</button>
+    <input id="show_hide" type="checkbox" style="height: 20px; width: 20px;">
+    <button>ha</button>
+  </div>
+  <div class="controls">
     <span id="time_left">00:00:00</span>
     <input type="hidden" id="_interval_id" value="1779">
-    <button id="close">c</button>
-    <button id="select">v</button>
-    <button id="reset_position">r</button>
   </div>
   <div id="cm_select">
   </div>
@@ -252,5 +261,6 @@
             vc.style.top = "0";
             vc.style.left = "0";
         };
+        c.querySelector("#orient").onclick = () => { c.querySelector("#cm_advanced_video_control").classList.toggle("vertical"); };
     }
 })();
