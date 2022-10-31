@@ -149,7 +149,7 @@
         const sel = c.querySelector("#cm_select");
         sel.innerHTML = "";
         const videoEls = document.querySelectorAll("video");
-        if (videoEls.length > 2) {
+        if (videoEls.length > 1) {
             videoEls.forEach((x, i) => {
                 const el = document.createElement("button");
                 el.textContent = i;
