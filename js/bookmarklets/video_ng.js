@@ -72,6 +72,19 @@
       min-width: 1px !important;
       margin: 0 !important;
   }
+
+  #cm_overlay {
+      background: repeating-linear-gradient(8deg,black,rgba(1,1,1,0.6) 20px);
+      position: absolute;
+      z-index: 9999;
+  }
+
+  #cm_hover_video {
+      display: none;
+      position: absolute;
+      background: #667788;
+      opacity: 30%;
+  }
 </style>
 
 <div id="cm_advanced_video_control">
@@ -116,7 +129,8 @@
   </div>
   <div class="container">
     <button id="pip">pip</button>
-    <input id="show_hide" type="checkbox" style="height: 20px; width: 20px;">
+    <input id="show_hide" type="checkbox">
+    <input id="over" type="checkbox">
     <button>ha</button>
   </div>
   <div class="controls">
@@ -125,6 +139,7 @@
   </div>
   <div id="cm_select">
   </div>
+  <div id="cm_hover_video"></div>
 </div>
 `;
 
@@ -147,8 +162,13 @@
     function selectVideo() {
         stopUpdate();
         const sel = c.querySelector("#cm_select");
+        const hover = c.querySelector("#cm_hover_video");
         sel.innerHTML = "";
-        const videoEls = document.querySelectorAll("video");
+        const videoEls = Array.from(document.querySelectorAll("video")).filter(x => {
+            const r = x.getBoundingClientRect();
+            return r.height != 0 && r.width != 0;
+        });
+
         if (videoEls.length > 1) {
             videoEls.forEach((x, i) => {
                 const el = document.createElement("button");
@@ -156,6 +176,17 @@
                 el.onclick = () => {
                     bindVideo(x);
                     sel.style.display = "none";
+                };
+                el.onmouseenter = () => {
+                    const br = x.getBoundingClientRect();
+                    hover.style.top = `${br.op}px`;
+                    hover.style.left = `${br.left}px`;
+                    hover.style.width = `${br.width}px`;
+                    hover.style.height = `${br.height}px`;
+                    hover.style.display = "block";
+                };
+                el.onmouseleave = () => {
+                    hover.style.display = "none";
                 };
                 sel.appendChild(el);
                 sel.style.display = "block";
@@ -184,6 +215,21 @@
         c.querySelector("#toggle_pause").onclick = () => { v.paused ? v.play() : v.pause() };
         c.querySelector("#pip").onclick = () => { v.requestPictureInPicture() };
         c.querySelector("#show_hide").onchange = function() { v.hidden = this.checked; };
+        c.querySelector("#over").onchange = function() {
+            let overlay = document.querySelector("#cm_overlay");
+            if (overlay)
+                overlay.remove();
+
+            if (this.checked) {
+                overlay = document.createElement("div");
+                overlay.id = "cm_overlay";
+                overlay.style.top = `${v.offsetTop}px`;
+                overlay.style.left = `${v.offsetLeft}px`;
+                overlay.style.width = `${v.offsetWidth}px`;
+                overlay.style.height = `${v.offsetHeight}px`;
+                v.parentElement.appendChild(overlay);
+            }
+        };
         intervalId = setInterval(
             () => {
                 c.querySelector("#time_left").textContent = new Date((v.duration - v.currentTime) / v.playbackRate * 1000).toISOString().substr(11, 8);
